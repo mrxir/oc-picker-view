@@ -34,6 +34,17 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="数据统计" id="944-jL-oZI">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="TyD-yh-F2h">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="DBG-gs-dGS">
+                                <rect key="frame" x="16" y="7" width="83" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="15"/>
+                                <state key="normal" title="年份选择"/>
+                                <connections>
+                                    <action selector="didClickYearSelectButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Jq-1n-pZG"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" style="plain" id="GIh-vS-R4n">
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ydg-DJ-gXG">
                                 <rect key="frame" x="276" y="7" width="83" height="30"/>
