@@ -47,12 +47,22 @@
                                     <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="30" maxY="0.0"/>
                                     <state key="normal" title="确定"/>
                                 </button>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qaK-i6-yAb">
+                                    <rect key="frame" x="0.0" y="49" width="375" height="1"/>
+                                    <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="1" id="uS0-Sn-3e5"/>
+                                    </constraints>
+                                </imageView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstItem="T35-8R-xqh" firstAttribute="height" secondItem="XH0-PC-9Co" secondAttribute="height" id="80c-J6-gLx"/>
+                                <constraint firstAttribute="bottom" secondItem="qaK-i6-yAb" secondAttribute="bottom" id="8AL-rt-sLi"/>
                                 <constraint firstItem="XH0-PC-9Co" firstAttribute="leading" secondItem="bW8-HF-3u3" secondAttribute="leading" id="Cre-vr-ucS"/>
                                 <constraint firstItem="T35-8R-xqh" firstAttribute="top" secondItem="bW8-HF-3u3" secondAttribute="top" id="HcE-Zd-uLd"/>
+                                <constraint firstAttribute="trailing" secondItem="qaK-i6-yAb" secondAttribute="trailing" id="Kfi-N9-CoC"/>
+                                <constraint firstItem="qaK-i6-yAb" firstAttribute="leading" secondItem="bW8-HF-3u3" secondAttribute="leading" id="Tdu-6Z-qAX"/>
                                 <constraint firstAttribute="height" constant="50" id="dLr-mF-IPU"/>
                                 <constraint firstItem="T35-8R-xqh" firstAttribute="leading" secondItem="XH0-PC-9Co" secondAttribute="trailing" id="g3z-pU-VUt"/>
                                 <constraint firstAttribute="bottom" secondItem="XH0-PC-9Co" secondAttribute="bottom" id="l9C-mV-Wiu"/>
