@@ -55,7 +55,7 @@ typedef void(^MRPickerViewDateSelectCompletionBlock)(NSDate *date, NSDateFormatt
  @param date 日期
  @param animated 是否使用动画
  */
-+ (void)setSelectedDate:(NSDate *)date animated:(BOOL)animated;
+//+ (void)setSelectedDate:(NSDate *)date animated:(BOOL)animated;
 
 /**
  重置选中状态, 默认选中所有 components 的第一行
@@ -71,7 +71,7 @@ typedef void(^MRPickerViewDateSelectCompletionBlock)(NSDate *date, NSDateFormatt
 
  @param key 该状态所对应的 key, 恢复时需要使用到它
  */
-+ (void)rememberSelectedStatusWithKey:(NSString *)key;
+//+ (void)rememberSelectedStatusWithKey:(NSString *)key;
 
 /**
  < ** 暂未实现 ** > 恢复选中状态
@@ -79,7 +79,7 @@ typedef void(^MRPickerViewDateSelectCompletionBlock)(NSDate *date, NSDateFormatt
  @param key 保存选中状态时的 key
  @param animated 是否使用动画
  */
-+ (void)recoverSelectedStatusWithKey:(NSString *)key animated:(BOOL)animated;
+//+ (void)recoverSelectedStatusWithKey:(NSString *)key animated:(BOOL)animated;
 
 /**
  < ** 暂未实现 ** > 重置选中状态, 并从归档记录中删除该 key 及保存的状态记录
@@ -87,7 +87,7 @@ typedef void(^MRPickerViewDateSelectCompletionBlock)(NSDate *date, NSDateFormatt
  @param key 保存选中状态时的 key
  @param animated 是否使用动画
  */
-+ (void)resetSelectedStatusWithKey:(NSString *)key animated:(BOOL)animated;
+//+ (void)resetSelectedStatusWithKey:(NSString *)key animated:(BOOL)animated;
 
 @end
 
