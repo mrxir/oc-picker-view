@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, MRPickerDataSourceType) {
 @property (nonatomic, assign) MRPickerDataSourceType dataSourceType;
 @property (nonatomic, assign) MRDateFormatterStyle dateFormatterStyle;
 @property (nonatomic, assign) NSUInteger componentCount;
+@property (nonatomic, strong) MRPickerViewCancelCompletionBlock cancelCompletionBlock;
 // public <<
 
 
@@ -193,8 +194,14 @@ typedef NS_ENUM(NSUInteger, MRPickerDataSourceType) {
     }
 }
 
++ (void)cancel:(MRPickerViewCancelCompletionBlock)cancelCompletionBlock
+{
+    [MRPickerView sharedView].cancelCompletionBlock = cancelCompletionBlock;
+}
+
 + (void)dismiss
 {
+    if ([MRPickerView sharedView].cancelCompletionBlock != NULL) [MRPickerView sharedView].cancelCompletionBlock();
     [[MRPickerView sharedView] dismiss];
 }
 
@@ -309,7 +316,7 @@ typedef NS_ENUM(NSUInteger, MRPickerDataSourceType) {
 {
     [super touchesEnded:touches withEvent:event];
     
-    [[MRPickerView sharedView] dismiss];
+    [MRPickerView  dismiss];
 }
 
 #pragma mark - UIACTION
@@ -658,7 +665,12 @@ typedef NS_ENUM(NSUInteger, MRPickerDataSourceType) {
 
 - (NSDate *)selectedDate
 {
-    NSDateFormatter *dateFormatter = [self dateFormatter];
+    static NSDateFormatter *dateFormatter = nil;
+    
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"yyyy年MM月dd日";
+    }
     
     NSMutableString *dateDescription = [NSMutableString string];
     

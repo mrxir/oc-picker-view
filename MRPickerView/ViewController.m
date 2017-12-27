@@ -43,6 +43,10 @@
                      }];
     
     [MRPickerView setSelectedRow:1 animated:YES];
+    
+    [MRPickerView cancel:^{
+        NSLog(@"取消了");
+    }];
 }
 
 - (void)showSingleRangeDatePicker
@@ -70,6 +74,10 @@
                                   }];
     
     [MRPickerView setSelectedDate:[NSDate date] animated:YES];
+    
+    [MRPickerView cancel:^{
+        NSLog(@"取消了");
+    }];
 }
 
 - (void)showDoubleRangeDatePicker
@@ -99,6 +107,10 @@
                              }];
     
     [MRPickerView setSelectedBeginDate:[dateFormatter dateFromString:@"2017/11/15"] endDate:[dateFormatter dateFromString:@"2017/12/12"] animated:YES];
+    
+    [MRPickerView cancel:^{
+        NSLog(@"取消了");
+    }];
 }
 
 

@@ -27,6 +27,8 @@ typedef void(^MRPickerViewDateSigleRangeSelectCompletionBlock)(NSDate *date);
 
 typedef void(^MRPickerViewDateDoubleRangeSelectCompletionBlock)(NSDate *beginDate, NSDate *endDate, NSInteger offset);
 
+typedef void(^MRPickerViewCancelCompletionBlock)(void);
+
 @interface MRPickerView : UIView
 
 /** 使用数组填充选择器，实质上与日期无关。 */
@@ -93,6 +95,8 @@ typedef void(^MRPickerViewDateDoubleRangeSelectCompletionBlock)(NSDate *beginDat
  @param animated 是否使用动画
  */
 //+ (void)resetSelectedStatusWithKey:(NSString *)key animated:(BOOL)animated;
+
++ (void)cancel:(MRPickerViewCancelCompletionBlock)cancelCompletionBlock;
 
 + (void)dismiss;
 
