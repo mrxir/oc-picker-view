@@ -23,39 +23,43 @@ typedef NS_ENUM(NSUInteger, MRDateFormatterStyle) {
 
 typedef void(^MRPickerViewSelectCompletionBlock)(NSInteger row);
 
-typedef void(^MRPickerViewDateSelectCompletionBlock)(NSDate *date, NSDateFormatter *formatter);
+typedef void(^MRPickerViewDateSigleRangeSelectCompletionBlock)(NSDate *date);
+
+typedef void(^MRPickerViewDateDoubleRangeSelectCompletionBlock)(NSDate *beginDate, NSDate *endDate, NSInteger offset);
 
 @interface MRPickerView : UIView
 
-+ (void)showPickerWithComponents:(NSArray *)components
-                selectCompletion:(MRPickerViewSelectCompletionBlock)selectCompletion
-               confirmCompletion:(MRPickerViewSelectCompletionBlock)confirmCompletion;
+/** 使用数组填充选择器，实质上与日期无关。 */
++ (void)showPickerWithArray:(NSArray *)array
+           selectCompletion:(MRPickerViewSelectCompletionBlock)selectCompletion
+          confirmCompletion:(MRPickerViewSelectCompletionBlock)confirmCompletion;
 
++ (void)setSelectedRow:(NSInteger)row animated:(BOOL)animated;
+
+
+/** 使用单个日期约束构建选择控件，style 样式决定 components 数 */
 + (void)showPickerWithDateFormatterStyle:(MRDateFormatterStyle)style
                              minimumDate:(NSDate *)minimumDate
                              maximumDate:(NSDate *)maximumDate
-                        selectCompletion:(MRPickerViewDateSelectCompletionBlock)selectCompletion
-                       confirmCompletion:(MRPickerViewDateSelectCompletionBlock)confirmCompletion;
+                        selectCompletion:(MRPickerViewDateSigleRangeSelectCompletionBlock)selectCompletion
+                       confirmCompletion:(MRPickerViewDateSigleRangeSelectCompletionBlock)confirmCompletion;
 
-+ (void)dismiss;
++ (void)setSelectedDate:(NSDate *)date animated:(BOOL)animated;
 
-#pragma mark - SET SELECTED ROW OR DATE METHOD
-
-/**
- 设置选中行, 仅在使用 showPickerWithComponents 时有效
-
- @param row 行数
- @param animated 是否使用动画
+/** 使用成对的日期约束构建选择控件，components 数固定为 2，style 样式仅决定每个 component 中的显示样式
+ *  当 offset!=0 时忽略 endMinimumDate 和 endMaximumDate 参数，由 beginMinimumDate，beginMaximumDate 和 offset 计算而成
+ *  offset 单位为天
  */
-+ (void)setSelectedRow:(NSInteger)row animated:(BOOL)animated;
++ (void)showPickerWithDateFormatter:(NSDateFormatter *)dateFormatter
+                   beginMinimumDate:(NSDate *)beginMinimumDate
+                   beginMaximumDate:(NSDate *)beginMaximumDate
+                     endMinimumDate:(NSDate *)endMinimumDate
+                     endMaximumDate:(NSDate *)endMaximumDate
+                             offset:(NSInteger)offset
+                   selectCompletion:(MRPickerViewDateDoubleRangeSelectCompletionBlock)selectCompletion
+                  confirmCompletion:(MRPickerViewDateDoubleRangeSelectCompletionBlock)confirmCompletion;
 
-/**
- < ** 暂未实现 ** > 设置选中日期, 仅在使用 showPickerWithDateFormatterStyle 时有效
-
- @param date 日期
- @param animated 是否使用动画
- */
-//+ (void)setSelectedDate:(NSDate *)date animated:(BOOL)animated;
++ (void)setSelectedBeginDate:(NSDate *)beginDate endDate:(NSDate *)endDate animated:(BOOL)animated;
 
 /**
  重置选中状态, 默认选中所有 components 的第一行
@@ -63,6 +67,7 @@ typedef void(^MRPickerViewDateSelectCompletionBlock)(NSDate *date, NSDateFormatt
  @param animated 是否使用动画
  */
 + (void)resetSelectedStatusAnimated:(BOOL)animated;
+
 
 #pragma mark - ARCHIVE SELECTED STATUS METHOD
 
@@ -88,6 +93,8 @@ typedef void(^MRPickerViewDateSelectCompletionBlock)(NSDate *date, NSDateFormatt
  @param animated 是否使用动画
  */
 //+ (void)resetSelectedStatusWithKey:(NSString *)key animated:(BOOL)animated;
+
++ (void)dismiss;
 
 @end
 
