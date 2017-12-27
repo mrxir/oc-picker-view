@@ -180,7 +180,7 @@ typedef NS_ENUM(NSUInteger, MRPickerDataSourceType) {
 {
     MRPickerView *picker = [MRPickerView sharedView];
     NSDateComponents *beginDateComponents = [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:picker.beginMinimumDate toDate:beginDate];
-    NSDateComponents *endDateComponents = [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:picker.endMinimumDate toDate:beginDate];
+    NSDateComponents *endDateComponents = [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:picker.beginMinimumDate toDate:endDate];
     [picker.pickerView selectRow:beginDateComponents.day inComponent:0 animated:animated];
     [picker.pickerView selectRow:endDateComponents.day inComponent:1 animated:animated];
 }

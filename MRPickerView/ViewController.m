@@ -98,7 +98,7 @@
                                  NSLog(@"确认了开始日期: %@ 结束日期: %@ 相隔天数: %d", [formatter stringFromDate:beginDate], [formatter stringFromDate:endDate], (unsigned)offset);
                              }];
     
-    [MRPickerView setSelectedBeginDate:[NSDate date] endDate:[NSDate date] animated:YES];
+    [MRPickerView setSelectedBeginDate:[dateFormatter dateFromString:@"2017/11/15"] endDate:[dateFormatter dateFromString:@"2017/12/12"] animated:YES];
 }
 
 
