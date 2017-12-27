@@ -8,9 +8,18 @@
 
 #import "MRPickerView.h"
 
-typedef NS_ENUM(NSUInteger, MRPickerDataType) {
-    MRPickerDataTypeData,
-    MRPickerDataTypeDate,
+/**
+ 数据源类型
+
+ - MRPickerDataSourceTypeArray: 数据源为数组
+ - MRPickerDataSourceTypeSingleDateRange: 根据一个日期范围构建日期控件
+ - MRPickerDataSourceTypeDoubleDateRange: 根据一对日期控件构建日期控件
+
+ */
+typedef NS_ENUM(NSUInteger, MRPickerDataSourceType) {
+    MRPickerDataSourceTypeArray,
+    MRPickerDataSourceTypeSingleDateRange,
+    MRPickerDataSourceTypeDoubleDateRange,
 };
 
 @interface MRPickerView ()<UIPickerViewDataSource, UIPickerViewDelegate>
@@ -22,21 +31,42 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
     BOOL _isInitializing;
 }
 
-@property (nonatomic, assign) MRPickerDataType dataType;
-
+// public >>
+@property (nonatomic, assign) MRPickerDataSourceType dataSourceType;
 @property (nonatomic, assign) MRDateFormatterStyle dateFormatterStyle;
+@property (nonatomic, assign) NSUInteger componentCount;
+// public <<
 
-@property (nonatomic, strong) NSArray *components;
 
-@property (nonatomic, strong) NSDate *minimumDate;
-
-@property (nonatomic, strong) NSDate *maximumDate;
-
+// 用于 MRPickerDataSourceTypeArray >>
+@property (nonatomic, strong) NSArray *array;
 @property (nonatomic, strong) MRPickerViewSelectCompletionBlock dataSelectCompletion;
 @property (nonatomic, strong) MRPickerViewSelectCompletionBlock dataConfirmCompletion;
+// MRPickerDataSourceTypeArray <<
 
-@property (nonatomic, strong) MRPickerViewDateSelectCompletionBlock dateSelectCompletion;
-@property (nonatomic, strong) MRPickerViewDateSelectCompletionBlock dateConfirmCompletion;
+
+// 用于 MRPickerDataSourceTypeSingleDateRange >>
+@property (nonatomic, strong) NSDate *minimumDate;
+@property (nonatomic, strong) NSDate *maximumDate;
+@property (nonatomic, strong) MRPickerViewDateSigleRangeSelectCompletionBlock singleRangeSelectCompletion;
+@property (nonatomic, strong) MRPickerViewDateSigleRangeSelectCompletionBlock singleRangeConfirmCompletion;
+// MRPickerDataSourceTypeSingleDateRange <<
+
+
+// 用于 MRPickerDataSourceTypeSingleDateRangeFixed2Components >>
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
+@property (nonatomic, strong) NSDate *beginMinimumDate;
+@property (nonatomic, strong) NSDate *beginMaximumDate;
+@property (nonatomic, strong) NSDate *endMinimumDate;
+@property (nonatomic, strong) NSDate *endMaximumDate;
+@property (nonatomic, assign) NSInteger offset;
+@property (nonatomic, strong) MRPickerViewDateDoubleRangeSelectCompletionBlock doubleRangeSelectCompletion;
+@property (nonatomic, strong) MRPickerViewDateDoubleRangeSelectCompletionBlock doubleRangeConfirmCompletion;
+// MRPickerDataSourceTypeSingleDateRangeFixed2Components <<
+
+
+
+
 
 @property (nonatomic, strong) IBOutlet UIView *view;
 
@@ -58,13 +88,14 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
 
 #pragma mark - PUBLIC METHOD
 
-+ (void)showPickerWithComponents:(NSArray *)components
-                selectCompletion:(MRPickerViewSelectCompletionBlock)selectCompletion
-               confirmCompletion:(MRPickerViewSelectCompletionBlock)confirmCompletion
++ (void)showPickerWithArray:(NSArray *)array
+           selectCompletion:(MRPickerViewSelectCompletionBlock)selectCompletion
+          confirmCompletion:(MRPickerViewSelectCompletionBlock)confirmCompletion
 {
     MRPickerView *pickerView = [MRPickerView sharedView];
-    pickerView.dataType = MRPickerDataTypeData;
-    pickerView.components = components;
+    pickerView.dataSourceType = MRPickerDataSourceTypeArray;
+    pickerView.array = array;
+    pickerView.componentCount = 1;
     pickerView.dataSelectCompletion = selectCompletion;
     pickerView.dataConfirmCompletion = confirmCompletion;
     [pickerView.cancelButton addTarget:pickerView action:@selector(didClickCancelButton:) forControlEvents:UIControlEventTouchUpInside];
@@ -75,36 +106,58 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
 + (void)showPickerWithDateFormatterStyle:(MRDateFormatterStyle)style
                              minimumDate:(NSDate *)minimumDate
                              maximumDate:(NSDate *)maximumDate
-                        selectCompletion:(MRPickerViewDateSelectCompletionBlock)selectCompletion
-                       confirmCompletion:(MRPickerViewDateSelectCompletionBlock)confirmCompletion
+                        selectCompletion:(MRPickerViewDateSigleRangeSelectCompletionBlock)selectCompletion
+                       confirmCompletion:(MRPickerViewDateSigleRangeSelectCompletionBlock)confirmCompletion
 {
     MRPickerView *pickerView = [MRPickerView sharedView];
-    pickerView.dataType = MRPickerDataTypeDate;
+    pickerView.dataSourceType = MRPickerDataSourceTypeSingleDateRange;
     pickerView.dateFormatterStyle = style;
+    pickerView.componentCount = style+1;
     pickerView.minimumDate = minimumDate;
     pickerView.maximumDate = maximumDate;
-    pickerView.dateSelectCompletion = selectCompletion;
-    pickerView.dateConfirmCompletion = confirmCompletion;
+    pickerView.singleRangeSelectCompletion = selectCompletion;
+    pickerView.singleRangeConfirmCompletion = confirmCompletion;
     [pickerView.cancelButton addTarget:pickerView action:@selector(didClickCancelButton:) forControlEvents:UIControlEventTouchUpInside];
     [pickerView.confirmButton addTarget:pickerView action:@selector(didClickConfirmButton:) forControlEvents:UIControlEventTouchUpInside];
     [pickerView show];
 }
 
-+ (void)dismiss
++ (void)showPickerWithDateFormatter:(NSDateFormatter *)dateFormatter
+                   beginMinimumDate:(NSDate *)beginMinimumDate
+                   beginMaximumDate:(NSDate *)beginMaximumDate
+                     endMinimumDate:(NSDate *)endMinimumDate
+                     endMaximumDate:(NSDate *)endMaximumDate
+                             offset:(NSInteger)offset
+                   selectCompletion:(MRPickerViewDateDoubleRangeSelectCompletionBlock)selectCompletion
+                  confirmCompletion:(MRPickerViewDateDoubleRangeSelectCompletionBlock)confirmCompletion
 {
-    [[MRPickerView sharedView] dismiss];
+    MRPickerView *pickerView = [MRPickerView sharedView];
+    pickerView.dataSourceType = MRPickerDataSourceTypeDoubleDateRange;
+    pickerView.dateFormatter = dateFormatter;
+    pickerView.componentCount = 2;
+    pickerView.beginMinimumDate = beginMinimumDate;
+    pickerView.beginMaximumDate = beginMaximumDate;
+    pickerView.endMinimumDate = endMinimumDate;
+    pickerView.endMaximumDate = endMaximumDate;
+    pickerView.offset = offset;
+    pickerView.doubleRangeSelectCompletion = selectCompletion;
+    pickerView.doubleRangeConfirmCompletion = confirmCompletion;
+    [pickerView.cancelButton addTarget:pickerView action:@selector(didClickCancelButton:) forControlEvents:UIControlEventTouchUpInside];
+    [pickerView.confirmButton addTarget:pickerView action:@selector(didClickConfirmButton:) forControlEvents:UIControlEventTouchUpInside];
+    [pickerView show];
+    
 }
 
 + (void)setSelectedRow:(NSInteger)row animated:(BOOL)animated
 {
     MRPickerView *picker = [MRPickerView sharedView];
     
-    if (picker.dataType == MRPickerDataTypeData) {
+    if (picker.dataSourceType == MRPickerDataSourceTypeArray) {
         
         if (row > [picker.pickerView numberOfRowsInComponent:0]) {
-            NSLog(@" | * [ERROR] row %d is out of count in components %d",
+            NSLog(@" | * [ERROR] row %d is out of bounds with array [0, ..., %d]",
                   (unsigned)row,
-                  (unsigned)picker.components.count);
+                  (unsigned)picker.array.count);
         } else {
             [picker.pickerView selectRow:row inComponent:0 animated:animated];
         }
@@ -116,23 +169,33 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
 
 + (void)setSelectedDate:(NSDate *)date animated:(BOOL)animated
 {
-    /*
     MRPickerView *picker = [MRPickerView sharedView];
-    
-    NSDateComponents *dateComponents = [MRPickerView dateComponentsWithUnit:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:date];
-    */
+    NSDateComponents *dateComponents = [MRPickerView dateComponentsWithUnit:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:picker.minimumDate toDate:date];
+    if (picker.componentCount >= 1) [picker.pickerView selectRow:dateComponents.year inComponent:0 animated:animated];
+    if (picker.componentCount >= 2) [picker.pickerView selectRow:dateComponents.month inComponent:1 animated:animated];
+    if (picker.componentCount >= 3) [picker.pickerView selectRow:dateComponents.day inComponent:2 animated:animated];
 }
 
-+ (void)resetSelectedStatusAnimated:(BOOL)animated;
++ (void)setSelectedBeginDate:(NSDate *)beginDate endDate:(NSDate *)endDate animated:(BOOL)animated
 {
     MRPickerView *picker = [MRPickerView sharedView];
-    
+    NSDateComponents *beginDateComponents = [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:picker.beginMinimumDate toDate:beginDate];
+    NSDateComponents *endDateComponents = [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:picker.endMinimumDate toDate:beginDate];
+    [picker.pickerView selectRow:beginDateComponents.day inComponent:0 animated:animated];
+    [picker.pickerView selectRow:endDateComponents.day inComponent:1 animated:animated];
+}
+
++ (void)resetSelectedStatusAnimated:(BOOL)animated
+{
+    MRPickerView *picker = [MRPickerView sharedView];
     for (NSInteger i = 0; i < picker.pickerView.numberOfComponents; i ++) {
-        
         [picker.pickerView selectRow:0 inComponent:i animated:animated];
-        
     }
-    
+}
+
++ (void)dismiss
+{
+    [[MRPickerView sharedView] dismiss];
 }
 
 #pragma mark - INIT
@@ -266,16 +329,22 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
 {
     __weak typeof(self) _self = self;
     
-    if (self.dataType == MRPickerDataTypeData) {
+    if (self.dataSourceType == MRPickerDataSourceTypeArray) {
         
         if (self.dataSelectCompletion != NULL) {
             self.dataSelectCompletion([_self.pickerView selectedRowInComponent:0]);
         }
         
-    } else if (self.dataType == MRPickerDataTypeDate) {
+    } else if (self.dataSourceType == MRPickerDataSourceTypeSingleDateRange) {
         
-        if (self.dateSelectCompletion != NULL) {
-            self.dateSelectCompletion([_self selectedDate], [_self dateFormatter]);
+        if (self.singleRangeSelectCompletion != NULL) {
+            self.singleRangeSelectCompletion([_self selectedDate]);
+        }
+        
+    } else if (self.dataSourceType == MRPickerDataSourceTypeDoubleDateRange) {
+        
+        if (self.doubleRangeSelectCompletion != NULL) {
+            self.doubleRangeSelectCompletion([_self selectedBeginDate], [_self selectedEndDate], [_self selectedRangeOffset]);
         }
         
     }
@@ -285,16 +354,22 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
 {
     __weak typeof(self) _self = self;
     
-    if (self.dataType == MRPickerDataTypeData) {
+    if (self.dataSourceType == MRPickerDataSourceTypeArray) {
         
         if (self.dataConfirmCompletion != NULL) {
             self.dataConfirmCompletion([_self.pickerView selectedRowInComponent:0]);
         }
         
-    } else if (self.dataType == MRPickerDataTypeDate) {
+    } else if (self.dataSourceType == MRPickerDataSourceTypeSingleDateRange) {
         
-        if (self.dateConfirmCompletion != NULL) {
-            self.dateConfirmCompletion([_self selectedDate], [_self dateFormatter]);
+        if (self.singleRangeConfirmCompletion != NULL) {
+            self.singleRangeConfirmCompletion([_self selectedDate]);
+        }
+        
+    } else if (self.dataSourceType == MRPickerDataSourceTypeDoubleDateRange) {
+        
+        if (self.doubleRangeConfirmCompletion != NULL) {
+            self.doubleRangeConfirmCompletion([_self selectedBeginDate], [_self selectedEndDate], [_self selectedRangeOffset]);
         }
         
     }
@@ -309,34 +384,18 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
 {
-    NSInteger components = 0;
-    
-    if (self.dataType == MRPickerDataTypeData) {
-        components = 1;
-    } else {
-        
-        if (self.dateFormatterStyle == MRDateFormatterStyleYear) {
-            components = 1;
-        } else if (self.dateFormatterStyle == MRDateFormatterStyleYearMonth) {
-            components = 2;
-        } else if (self.dateFormatterStyle == MRDateFormatterStyleYearMonthDay) {
-            components = 3;
-        }
-        
-    }
-    
-    return components;
+    return self.componentCount;
 }
 
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     NSInteger rows = 0;
     
-    if (self.dataType == MRPickerDataTypeData) {
+    if (self.dataSourceType == MRPickerDataSourceTypeArray) {
         
-        rows = self.components.count;
+        rows = self.array.count;
         
-    } else {
+    } else if (self.dataSourceType == MRPickerDataSourceTypeSingleDateRange) {
         
         // year
         if (self.dateFormatterStyle == MRDateFormatterStyleYear) {
@@ -344,8 +403,8 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
             rows = [MRPickerView dateComponentsWithUnit:NSCalendarUnitYear
                                                fromDate:self.minimumDate
                                                  toDate:self.maximumDate].year + 1;
-        
-        // year month
+            
+            // year month
         } else if (self.dateFormatterStyle == MRDateFormatterStyleYearMonth) {
             
             if (component == 0) {
@@ -361,7 +420,7 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
                 
                 if ([self selectedYear] == dateComponents.year) {
                     
-                 rows = dateComponents.month;
+                    rows = dateComponents.month;
                     
                 } else {
                     
@@ -370,7 +429,7 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
                 
             }
             
-        // year month day
+            // year month day
         } else if (self.dateFormatterStyle == MRDateFormatterStyleYearMonthDay) {
             
             if (component == 0) {
@@ -431,6 +490,16 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
             
         }
         
+    } else if (self.dataSourceType == MRPickerDataSourceTypeDoubleDateRange) {
+        
+        // begin
+        if (component == 0) {
+           rows = [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:self.beginMinimumDate toDate:self.beginMaximumDate].day+1;
+        // end
+        } else if (component == 1) {
+            rows = [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:self.endMinimumDate toDate:self.endMaximumDate].day+1;
+        }
+        
     }
     
     return rows;
@@ -440,16 +509,16 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
 {
     NSString *title = nil;
     
-    if (self.dataType == MRPickerDataTypeData) {
-        title = [NSString stringWithFormat:@"%@", self.components[row]];
-    } else {
+    if (self.dataSourceType == MRPickerDataSourceTypeArray) {
+        title = [NSString stringWithFormat:@"%@", self.array[row]];
+    } else if (self.dataSourceType == MRPickerDataSourceTypeSingleDateRange) {
         
         // year
         if (self.dateFormatterStyle == MRDateFormatterStyleYear) {
             
             NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitYear value:row toDate:self.minimumDate];
             
-            title = [self stringFromDate:date withStyle:MRDateFormatterStyleYear];
+            title = [self stringFromDate:date withStyle:MRDateFormatterStyleYear clip:YES];
         
         // year month
         } else if (self.dateFormatterStyle == MRDateFormatterStyleYearMonth) {
@@ -458,13 +527,13 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
                 
                 NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitYear value:row toDate:self.minimumDate];
                 
-                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYear];
+                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYear clip:YES];
                 
             } else if (component == 1) {
                 
                 NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitMonth value:row toDate:self.minimumDate];
                 
-                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYearMonth];
+                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYearMonth clip:YES];
                 
             }
         
@@ -475,21 +544,37 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
                 
                 NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitYear value:row toDate:self.minimumDate];
                 
-                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYear];
+                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYear clip:YES];
                 
             } else if (component == 1) {
                 
                 NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitMonth value:row toDate:self.minimumDate];
                 
-                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYearMonth];
+                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYearMonth clip:YES];
                 
             } else if (component == 2) {
                 
                 NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitDay value:row toDate:self.minimumDate];
                 
-                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYearMonthDay];
+                title = [self stringFromDate:date withStyle:MRDateFormatterStyleYearMonthDay clip:YES];
                 
             }
+            
+        }
+        
+    } else if (self.dataSourceType == MRPickerDataSourceTypeDoubleDateRange) {
+        
+        if (component == 0) {
+            
+            NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitDay value:row toDate:self.beginMinimumDate];
+            
+            title = [self.dateFormatter stringFromDate:date];
+            
+        } else if (component == 1) {
+            
+            NSDate *date = [MRPickerView dateByAddingUnit:NSCalendarUnitDay value:row toDate:self.endMinimumDate];
+            
+            title = [self.dateFormatter stringFromDate:date];
             
         }
         
@@ -593,42 +678,48 @@ typedef NS_ENUM(NSUInteger, MRPickerDataType) {
     
 }
 
-- (NSDateFormatter *)dateFormatter
+- (NSDate *)selectedBeginDate
 {
-    static NSDateFormatter *dateFormatter = nil;
-    if (!dateFormatter) {
-        dateFormatter = [[NSDateFormatter alloc] init];
-    }
-    
-    if (self.dateFormatterStyle == MRDateFormatterStyleYear) {
-        dateFormatter.dateFormat = @"yyyy年";
-    } else if (self.dateFormatterStyle == MRDateFormatterStyleYearMonth) {
-        dateFormatter.dateFormat = @"yyyy年MM月";
-    } else if (self.dateFormatterStyle == MRDateFormatterStyleYearMonthDay) {
-        dateFormatter.dateFormat = @"yyyy年MM月dd日";
-    }
-    
-    return dateFormatter;
+    return [MRPickerView dateByAddingUnit:NSCalendarUnitDay value:[self.pickerView selectedRowInComponent:0] toDate:self.beginMinimumDate];
+}
+
+- (NSDate *)selectedEndDate
+{
+    return [MRPickerView dateByAddingUnit:NSCalendarUnitDay value:[self.pickerView selectedRowInComponent:1] toDate:self.endMinimumDate];
+}
+
+- (NSInteger)selectedRangeOffset
+{
+    return [MRPickerView dateComponentsWithUnit:NSCalendarUnitDay fromDate:[self selectedBeginDate] toDate:[self selectedEndDate]].day;
 }
 
 // not self dateFormatterStyle, but current components needed style
-- (NSString *)stringFromDate:(NSDate *)date withStyle:(MRDateFormatterStyle)style
+- (NSString *)stringFromDate:(NSDate *)date withStyle:(MRDateFormatterStyle)style clip:(BOOL)clip
 {
     static NSDateFormatter *dateFormatter = nil;
     if (!dateFormatter) {
         dateFormatter = [[NSDateFormatter alloc] init];
     }
     
-    if (style == MRDateFormatterStyleYear) {
-        dateFormatter.dateFormat = @"yyyy年";
-    } else if (style == MRDateFormatterStyleYearMonth) {
-        dateFormatter.dateFormat = @"MM月";
-    } else if (style == MRDateFormatterStyleYearMonthDay) {
-        dateFormatter.dateFormat = @"dd日";
+    if (clip) {
+        if (style == MRDateFormatterStyleYear) {
+            dateFormatter.dateFormat = @"yyyy年";
+        } else if (style == MRDateFormatterStyleYearMonth) {
+            dateFormatter.dateFormat = @"MM月";
+        } else if (style == MRDateFormatterStyleYearMonthDay) {
+            dateFormatter.dateFormat = @"dd日";
+        }
+    } else {
+        if (style == MRDateFormatterStyleYear) {
+            dateFormatter.dateFormat = @"yyyy年";
+        } else if (style == MRDateFormatterStyleYearMonth) {
+            dateFormatter.dateFormat = @"yyyy年MM月";
+        } else if (style == MRDateFormatterStyleYearMonthDay) {
+            dateFormatter.dateFormat = @"yyyy年MM月dd日";
+        }
     }
     
     return [dateFormatter stringFromDate:date];
-    
 }
 
 @end
