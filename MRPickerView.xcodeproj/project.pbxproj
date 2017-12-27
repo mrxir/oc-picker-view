@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2ECE99D71FF3DE67002619A9 /* MRPickerView.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 2ECE99D61FF3DE67002619A9 /* MRPickerView.podspec */; };
 		A35DB2861EEE645A00DB3794 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A35DB2851EEE645A00DB3794 /* main.m */; };
 		A35DB2891EEE645A00DB3794 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A35DB2881EEE645A00DB3794 /* AppDelegate.m */; };
 		A35DB28C1EEE645A00DB3794 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A35DB28B1EEE645A00DB3794 /* ViewController.m */; };
@@ -15,10 +16,10 @@
 		A35DB2941EEE645A00DB3794 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A35DB2921EEE645A00DB3794 /* LaunchScreen.storyboard */; };
 		A35DB29E1EEE6B2900DB3794 /* MRPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A35DB29D1EEE6B2900DB3794 /* MRPickerView.m */; };
 		A35DB2A01EEE76AA00DB3794 /* MRPickerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A35DB29F1EEE76AA00DB3794 /* MRPickerView.xib */; };
-		A35DB2A21EEECCEB00DB3794 /* screen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A35DB2A11EEECCEB00DB3794 /* screen@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2ECE99D61FF3DE67002619A9 /* MRPickerView.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MRPickerView.podspec; sourceTree = "<group>"; };
 		A35DB2811EEE645A00DB3794 /* MRPickerView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MRPickerView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A35DB2851EEE645A00DB3794 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A35DB2871EEE645A00DB3794 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -32,7 +33,6 @@
 		A35DB29C1EEE6B2900DB3794 /* MRPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRPickerView.h; sourceTree = "<group>"; };
 		A35DB29D1EEE6B2900DB3794 /* MRPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRPickerView.m; sourceTree = "<group>"; };
 		A35DB29F1EEE76AA00DB3794 /* MRPickerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MRPickerView.xib; sourceTree = "<group>"; };
-		A35DB2A11EEECCEB00DB3794 /* screen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "screen@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +49,7 @@
 		A35DB2781EEE645A00DB3794 = {
 			isa = PBXGroup;
 			children = (
+				2ECE99D61FF3DE67002619A9 /* MRPickerView.podspec */,
 				A35DB29B1EEE6B1700DB3794 /* Classes */,
 				A35DB2831EEE645A00DB3794 /* MRPickerView */,
 				A35DB2821EEE645A00DB3794 /* Products */,
@@ -71,7 +72,6 @@
 				A35DB28A1EEE645A00DB3794 /* ViewController.h */,
 				A35DB28B1EEE645A00DB3794 /* ViewController.m */,
 				A35DB28D1EEE645A00DB3794 /* Main.storyboard */,
-				A35DB2A11EEECCEB00DB3794 /* screen@2x.png */,
 				A35DB2901EEE645A00DB3794 /* Assets.xcassets */,
 				A35DB2921EEE645A00DB3794 /* LaunchScreen.storyboard */,
 				A35DB2951EEE645A00DB3794 /* Info.plist */,
@@ -158,10 +158,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A35DB2941EEE645A00DB3794 /* LaunchScreen.storyboard in Resources */,
+				2ECE99D71FF3DE67002619A9 /* MRPickerView.podspec in Resources */,
 				A35DB2A01EEE76AA00DB3794 /* MRPickerView.xib in Resources */,
 				A35DB2911EEE645A00DB3794 /* Assets.xcassets in Resources */,
 				A35DB28F1EEE645A00DB3794 /* Main.storyboard in Resources */,
-				A35DB2A21EEECCEB00DB3794 /* screen@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
